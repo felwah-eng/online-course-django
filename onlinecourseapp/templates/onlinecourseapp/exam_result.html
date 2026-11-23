@@ -1,0 +1,13 @@
+{% extends 'onlinecourseapp/base.html' %}
+{% block title %}Exam Results{% endblock %}
+{% block content %}
+<div class="card"><div class="card-body p-5 text-center">
+{% if passed %}<div class="display-5 mb-3">Congratulations!</div><p class="lead">You successfully passed the exam.</p>
+{% else %}<h1>Exam Completed</h1><p class="lead">You can review the lessons and try again.</p>{% endif %}
+<h2 class="h4">{{course.name}} — Exam Results</h2>
+<div class="display-4 fw-bold text-primary my-3">{{submission.score}} / {{submission.total}}</div>
+<p class="fs-4">Score: {{percentage}}%</p>
+<p class="text-muted">Submitted: {{submission.submitted_at}}</p>
+<a class="btn btn-primary" href="{% url 'onlinecourseapp:course_details' course.id %}">Back to Course</a>
+</div></div>
+{% endblock %}

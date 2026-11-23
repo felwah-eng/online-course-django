@@ -1,0 +1,23 @@
+{% extends 'onlinecourseapp/base.html' %}
+{% block title %}{{course.name}}{% endblock %}
+{% block content %}
+<div class="card mb-4"><div class="card-body"><div class="text-uppercase text-primary fw-semibold small mb-2">Course Details</div>
+<h1>{{ course.name }}</h1><p class="lead">{{ course.description }}</p></div></div>
+<h2 class="h4 mb-3">Course Lessons</h2>
+{% for lesson in course.lessons.all %}
+<div class="card mb-3"><div class="card-body"><h3 class="h5">Lesson {{forloop.counter}}: {{lesson.title}}</h3><p class="mb-0">{{lesson.content}}</p></div></div>
+{% empty %}<div class="alert alert-info">No lessons available.</div>{% endfor %}
+<h2 class="h4 mt-5">Course Exam</h2>
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'onlinecourseapp:submit' course.id %}">{% csrf_token %}
+{% for question in course.questions.all %}
+<fieldset class="card mb-3"><div class="card-body"><legend class="h5">{{forloop.counter}}. {{question.question_text}} <small class="text-muted">({{question.grade}} point{{question.grade|pluralize}})</small></legend>
+{% for choice in question.choices.all %}
+<div class="form-check"><input class="form-check-input" type="checkbox" name="question_{{question.id}}" value="{{choice.id}}" id="choice_{{choice.id}}">
+<label class="form-check-label" for="choice_{{choice.id}}">{{choice.choice_text}}</label></div>
+{% endfor %}</div></fieldset>
+{% empty %}<div class="alert alert-info">No questions are available yet.</div>{% endfor %}
+{% if course.questions.all %}<button type="submit" class="btn btn-success btn-lg">Submit Exam</button>{% endif %}
+</form>
+{% else %}<div class="alert alert-warning">Log in to take the exam: <a href="/admin/login/">Admin Login</a></div>{% endif %}
+{% endblock %}
