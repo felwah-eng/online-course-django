@@ -28,8 +28,20 @@ class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='questions')
     question_text = models.CharField(max_length=500)
     grade = models.PositiveIntegerField(default=1)
-    def is_get_score(self):
-        return self.grade
+   def is_get_score(self, selected_choices=None):
+    if selected_choices is None:
+        return 0
+
+    selected_ids = {
+        choice.id if isinstance(choice, Choice) else int(choice)
+        for choice in selected_choices
+    }
+
+    correct_ids = set(
+        self.choices.filter(is_correct=True).values_list('id', flat=True)
+    )
+
+    return self.grade if selected_ids == correct_ids else 0
     def __str__(self):
         return self.question_text
 
