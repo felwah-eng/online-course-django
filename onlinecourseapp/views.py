@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
-from .models import Course, Enrollment, Submission, Choice
+from .models import Course, Enrollment, Submission
 
 def course_list(request):
 return render(request, 'onlinecourseapp/course_list.html', {
@@ -24,7 +24,7 @@ request,
 @require_POST
 def submit(request, course_id):
 course = get_object_or_404(Course, pk=course_id)
-enrollment, created = Enrollment.objects.get_or_create(
+enrollment, _ = Enrollment.objects.get_or_create(
 user=request.user,
 course=course
 )
@@ -43,20 +43,23 @@ score = 0
 total = sum(question.grade for question in questions)
 
 for question in questions:
-    selected_ids = request.POST.getlist(
-        f'question_{question.id}'
+    selected_ids = set(
+        request.POST.getlist(f'question_{question.id}')
     )
 
     choices = list(question.choices.all())
+
     valid_choices = [
         choice for choice in choices
         if str(choice.id) in selected_ids
     ]
+
     selected_choices.extend(valid_choices)
 
     selected = {choice.id for choice in valid_choices}
     correct = {
-        choice.id for choice in choices if choice.is_correct
+        choice.id for choice in choices
+        if choice.is_correct
     }
 
     if selected == correct:
@@ -97,14 +100,12 @@ for question in course.questions.prefetch_related('choices'):
     total += question.grade
 
     correct_ids = {
-        choice.id
-        for choice in question.choices.all()
+        choice.id for choice in question.choices.all()
         if choice.is_correct
     }
 
     question_selected_ids = {
-        choice.id
-        for choice in question.choices.all()
+        choice.id for choice in question.choices.all()
         if choice.id in selected_ids
     }
 
