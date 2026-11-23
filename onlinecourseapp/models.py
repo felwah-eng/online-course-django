@@ -28,7 +28,8 @@ class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='questions')
     question_text = models.CharField(max_length=500)
     grade = models.PositiveIntegerField(default=1)
-
+    def is_get_score(self):
+        return self.grade
     def __str__(self):
         return self.question_text
 
@@ -43,6 +44,7 @@ class Choice(models.Model):
 
 
 class Submission(models.Model):
+    choices = models.ManyToManyField('Choice', related_name='submissions', blank=True)
     enrollment = models.ForeignKey('Enrollment', on_delete=models.CASCADE, related_name='submissions')
     submitted_at = models.DateTimeField(auto_now_add=True)
     score = models.PositiveIntegerField(default=0)
