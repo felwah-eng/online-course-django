@@ -1,0 +1,14 @@
+{% extends 'onlinecourseapp/base.html' %}
+
+{% block title %}Exam Results{% endblock %}
+
+{% block content %}
+
+<h2>{{ course.name }} - Exam Results</h2>
+<h3>Score: {{ grade }} / {{ total }}</h3>
+<p>Percentage: {{ percentage }}%</p>
+
+<a href="{% url 'onlinecourseapp:course_details' course.id %}"
+   class="btn btn-primary">
+  Back to Course
+</a>
